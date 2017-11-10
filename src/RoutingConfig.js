@@ -17,7 +17,7 @@ const RoutingConfig = () =>(
 				<Route exact path="/" component={Login}/>
 				<Route path="/home" component={Home}/>
 				<Route path="/books/:bookid.html" component={BookDetail}/>
-				<Route path="/books/list/:type?/:key?/:pages?" component={BookList}/>
+				<Route path="/books/list/:type?/:key?/:page?" component={BookList}/>
 				<Route path="/books/readings/:page?" component={ReadingList} />
 				<Route path="/contact" component={Contact} />
 			</div>

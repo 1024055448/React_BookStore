@@ -1,46 +1,65 @@
 import React, { Component } from 'react';
 
-class Paginator extends Component {
-    render() {
-        let prev="";
-        let next="";
-        if(this.props.page==="1") {
-            //Now in the first page
-            prev=<a className="disabled" title="上一页">
-                    <i className="glyphicons rewind" />
-                </a>
-        }
-        else {
-            prev=<a href={"/books/list/" + this.props.type + "/" + this.props.keyword + "/"+(parseInt(this.props.page,10)-1)} title="上一页">
-                    <i className="glyphicons rewind" />
-                </a>
+class Tags extends Component {
+    constructor(props) {
+        super(props);
+        this.state={
+            tags: '',
+            bookid: ''
+        };
+    }
+    componentDidMount() {
+        this.setState({
+            bookid: this.props.bookid,
+        });
+    }
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.bookid===this.props.bookid) {
             
+            return;
         }
+        
+        var URI='http://api.rsywx.com/book/tagsByBookId/'+this.props.bookid;
+                
+        fetch(URI)
+            .then(response => {
+                return response.json();
+            })
+            .then(json => {
+                this.setState({
+                    tags: json.out,
+                    bookid: this.props.bookid
+                
+                });
+            });
+    }
 
-        if(parseInt(this.props.page,10)===this.props.pages){
-            //Now in the last page
-            next=<a className="disabled" title="下一页">
-                    <i className="glyphicons forward" />
-                </a>
-        }
-        else {
-            next=<a href={"/books/list/" + this.props.type + "/" + this.props.keyword + "/"+(parseInt(this.props.page,10)+1)} title="下一页">
-                    <i className="glyphicons forward" />
-                </a>
-        }
+    render() {
+        let tags=this.state.tags;
+
         return (
-            <section id="pagination" className="col-md-12">
-                <a href={"/books/list/" + this.props.type + "/" + this.props.keyword + "/1"} title="首页">
-                    <i className="glyphicons fast_backward" />
-                </a>
-                {prev}
-                {next}
-                <a href={"/books/list/" + this.props.type + "/" + this.props.keyword + "/" + this.props.pages} title="末页">
-                    <i className="glyphicons fast_forward" />
-                </a>
-            </section>
+            <div className="feature">
+                <div className="icon">
+                    <i className="glyphicons tags" />
+                </div>
+                <div className="text">
+                    <h3>TAG</h3>
+                    <small>
+                        {
+                            Object.keys(tags).map(function(tag,i) {  
+                                return (
+                           <span id={"tag-"+tag} key={"tag-"+tag}><a href={"/books/list/tag/"+tags[i].tag}>{tags[i].tag}</a>&nbsp;&nbsp;</span>
+                                );
+                            })
+                        }
+                                                
+                    </small>&nbsp;&nbsp;
+                                            
+                    <br />
+                </div>
+            </div>
         );
     }
 }
 
-export default Paginator;
+export default Tags;

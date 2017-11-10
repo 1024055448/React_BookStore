@@ -4,6 +4,7 @@ import Footer from './layouts/Footer';
 import MetaData from './MetaData';
 import ReviewList from './widget/ReviewList';
 import Tags from './widget/Tags';
+import ReviewPaginator from './widget/ReviewPaginator';
 
 class ReadingList extends Component{
 	constructor(props){
@@ -104,16 +105,24 @@ class ReadingList extends Component{
                                                     </tr>  
                                                 </tbody>
                                             </table>
-                                			);
-                                	})
+                                		        
+                                        );
+                                    })
                                 }
-                          </div>
+                            </div>
                         </div>
-                     </div>
+                        <div className="row">
+                            <ReviewPaginator pages={Math.ceil(this.state.count / 5)} page={this.state.page} />
+                        </div>
+
+                    </div>
                 </div>
                 <Footer />
             </div>
-			);
-	}
+
+        );
+    }
+
 }
+
 export default ReadingList;

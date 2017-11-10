@@ -1,22 +1,24 @@
-import React,{Component} from 'react';
+import React, {Component} from 'react';
 
 import TopNav from './layouts/TopNav';
 import MetaData from './MetaData';
-import Footer from './layouts/Footer';
-import Paginator from './widget/Paginator';
+import Footer from './layouts/Footer.js';
+import Paginator from './widget/Paginator.js';
 
 class BookList extends Component{
 	constructor(props){
 		super(props);
 		this.state={
-			 books: {},
-            pages: -1,
-            key: '',
+			books:{},
+			pages:-1,
+			key:"",
+            type:'',
+            page:''
 		};
 		this.handlePageChange = this.handlePageChange.bind(this);
-    	this.handleSearchChange = this.handleSearchChange.bind(this);
-    	this.gotoPage=this.gotoPage.bind(this);
-    	this.searchPage=this.searchPage.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.gotoPage=this.gotoPage.bind(this);
+        this.searchPage=this.searchPage.bind(this);
 	}
 	searchPage(e){
         let key=this.state.key;
@@ -30,7 +32,7 @@ class BookList extends Component{
         });
     }
 
-	 handlePageChange(e)
+    handlePageChange(e)
     {
         this.setState({
             page: e.target.value,
@@ -41,43 +43,57 @@ class BookList extends Component{
         window.location="/books/list/"+this.state.type+"/"+this.state.key+"/"+page;
         e.preventDefault();
     }
-	componentDidMount(){
-		this.setState({
-			type:this.props.match.params.type||'title',
-			key:this.props.match.params.key||'all',
-			page:this.props.match.params.page||'1'
-		});
-	}
-	componentDidUpdate(prevProps,prevState){
-		if(prevState.type!==this.state.type){
-			let URI="http://api.rsywx.com/books/list/"+this.state.type+"/"+this.state.key+"/"+this.state.page;
-			fetch(URI)
-			.then(res=>{
-				return res.json();
-			})
-			.then(json=>{
-				let out=json.out;
-				this.setState({
-					pages:Math.ceil(out.count.bc/20),
-					books:out.books
-				});
-			});
-		}
-	}
-	render(){
-		let books=this.state.books;
-		return(
-			<div>
-				<MetaData title={"藏书|第"+this.state.page+"页"}/>
-					 <TopNav active="1"/>
-					     <div className="widewrapper">
+    
+componentDidMount(){
+	this.setState({
+type:this.props.match.params.type||"title",
+key:this.props.match.params.key||"all",
+page:this.props.match.params.page||"1",
+	});
+}
+componentDidUpdate(prevProps,prevState){
+if(prevState.type!==this.state.type){
+	 let URI="http://api.rsywx.com/books/list/"+this.state.type+"/"+this.state.key+"/"+this.state.page;
+	 
+	 fetch(URI)
+                .then(response => {
+                    return response.json();
+                })
+	  .then(json => {
+                    let out=json.out;
+                    console.log(out);
+                    this.setState({
+                        pages: Math.ceil(out.count.bc/20),
+                        books: out.books
+	 	});
+	 });
+}
+}
+    render() {
+        let books=this.state.books;
+                                                
+        return (
+            <div>
+				<MetaData title={"Store藏书 | 第"+this.state.page+"页"}/>
+                <TopNav active="1"/>
+                    <div className="widewrapper">
                         <div className="container content">
                             <div className="row">
                                 <section id="searchform" className="col-md-6">
-                                	<form onSubmit={this.searchPage} acceptCharset="utf-8" className="form-inline">
-                                		 <div className="row">
+                                    <form
+                                        onSubmit={this.searchPage}
+                                        acceptCharset="utf-8"
+                                        className="form-inline">
+                                        <div className="row">
                                             <div className="col-sm-6 form-group">
-                                            	<input className="form-control input-sm" type="text" id="key" name="key" placeholder="all" onChange={this.handleSearchChange} value={this.state.key}/>&nbsp;&nbsp;
+                                                <input
+                                                    className="form-control input-sm"
+                                                    type="text"
+                                                    id="key"
+                                                    name="key"
+                                                    placeholder="all" 
+                                                    onChange={this.handleSearchChange}
+                                                    value={this.state.key} />&nbsp;&nbsp;
                                                 <button
                                                     type="submit"
                                                     className="btn btn-grove-one btn-sm btn-bold">搜索</button>
@@ -86,12 +102,28 @@ class BookList extends Component{
                                     </form>
                                 </section>
                                 <section id="gotoform" className="col-md-6">
-                                	<form onSubmit={this.gotoPage} acceptCharset="utf-8" className="form-inline">
-                                		 <div className="row">
+                                    <form
+                                        onSubmit={this.gotoPage}
+                                        acceptCharset="utf-8"
+                                        className="form-inline"
+                                        >
+                                        <div className="row">
                                             <div className="col-sm-6 form-group">
-                                            	<input className="form-control" type="text" id="page" name="page" placeholder="去第几页" onChange={this.handlePageChange} size="18"/>
-                                           			<input type="hidden" name="current" id="current" default="1"/>&nbsp;&nbsp;
-                                           			   <button
+                                                <input
+                                                    className="form-control input-sm"
+                                                    type="text"
+                                                    id="page"
+                                                    name="page"
+                                                    placeholder="直接去第几页" 
+                                                    onChange={this.handlePageChange}
+                                                    size="18"/>
+                                                <input
+                                                    type="hidden"
+                                                    name="current"
+                                                    id="current"
+                                                    defaultValue="1" 
+                                                    />&nbsp;&nbsp;
+                                                <button
                                                     type="submit"
                                                     className="btn btn-grove-one btn-sm btn-bold">直接去</button>
                                             </div>
@@ -121,14 +153,12 @@ class BookList extends Component{
                                                 </th>
                                             </tr>
                                             {
-                                            	Object.keys(books).map(function(book,index){
-                                            		let purchdate=new Date(books[index].purchdate);
-                                            		return (<tr key={index}>
-														<td>
-															<a href={"/books/"+books[index].bookid+".html"}>
-																{books[index].bookid}
-															</a>
-															  </td>
+                                                Object.keys(books).map(function(book, index) {
+                                                    let purchdate=new Date(books[index].purchdate);
+                                                   return (<tr key={index}>
+                                                <td>
+                                                    <a href={"/books/"+books[index].bookid+".html"}>{books[index].bookid}</a>
+                                                </td>
                                                 <td>
                                                     <a href={"/books/"+books[index].bookid+".html"}>{books[index].title}</a>
                                                 </td>
@@ -143,13 +173,17 @@ class BookList extends Component{
                                         </tbody>
                                     </table>
                                 </section>
-                                <Paginator type={this.state.type} keywords={this.state.key} page={this.state.page} pages={this.state.pages}/>
-                                  </div>
-                        			</div>
-                    					</div>
-                							<Footer />
-            									</div >
-                                            		);
-                                            	}
-                                            }
+                                <Paginator type={this.state.type} keyword={this.state.key} page={this.state.page} pages={this.state.pages}/>
+     
+                            </div>
+                        </div>
+                    </div>
+                <Footer />
+            </div >
+        );
+
+    }
+
+}
+
 export default BookList;

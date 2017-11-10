@@ -74,3 +74,15 @@
 .email-contact{
     color:#FFFAF0;
 }
+.row_img{
+    
+}
+.row_img img{
+    display:inline-block;
+    height: 50px;
+    width: 50px;
+}
+.row_img .row_imgn{
+    padding-left: 20px;
+    display: inline-block;
+}
